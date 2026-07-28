@@ -14,11 +14,13 @@ explicitly approves the public release.
 - Verify the GitHub description, topics, README rendering, and detected MIT
   license before changing repository visibility.
 - Confirm the `chunkbycount` name on PyPI and TestPyPI immediately before use.
-- Configure a PyPI Trusted Publisher and a protected GitHub `pypi`
-  environment. Do not store a long-lived PyPI token in the repository.
-- Before making the GitHub repository public, enable branch protection,
-  Dependabot alerts, secret scanning, push protection, and private
-  vulnerability reporting where available.
+- Configure a PyPI Trusted Publisher for `.github/workflows/publish.yml` and
+  add required reviewers to the GitHub `pypi` environment. Private-repository
+  plans may expose those controls only after the visibility change. Do not
+  store a long-lived PyPI token in the repository.
+- Before making the GitHub repository public, enable branch protection and
+  Dependabot alerts. Immediately after the visibility change, verify secret
+  scanning and push protection, then enable private vulnerability reporting.
 
 ## Build and verify
 
@@ -60,7 +62,9 @@ release version and date. Keep these values aligned:
    environment.
 2. Obtain explicit approval for repository visibility and PyPI publication.
 3. Publish the GitHub repository and create the signed release tag.
-4. Publish the exact verified artifacts to PyPI through Trusted Publishing.
+4. Publish the GitHub release. The `Publish to PyPI` workflow verifies that
+   its tag matches `project.version`, rebuilds and checks the distribution,
+   then publishes through Trusted Publishing after environment approval.
 5. Verify the PyPI metadata, wheel contents, README rendering, and clean
    installation.
 
