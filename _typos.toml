@@ -1,0 +1,3 @@
+[default.extend-words]
+# "ded" is the deductible financial breakdown field (not a typo for "dead")
+ded = "ded"

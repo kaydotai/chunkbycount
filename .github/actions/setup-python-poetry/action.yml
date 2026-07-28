@@ -1,0 +1,29 @@
+name: Setup Python and Poetry
+description: Setup Python, install Poetry, and install project dependencies
+
+inputs:
+  python-version:
+    description: Python version to install
+    required: false
+    default: "3.11"
+  poetry-install-args:
+    description: Arguments passed to `poetry sync`
+    required: false
+    default: "--with dev"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Poetry
+      shell: bash
+      run: pipx install poetry==2.1.1
+
+    - name: Setup Python
+      uses: actions/setup-python@v7
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: poetry
+
+    - name: Install dependencies
+      shell: bash
+      run: poetry sync ${{ inputs.poetry-install-args }}

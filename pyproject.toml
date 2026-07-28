@@ -1,0 +1,142 @@
+[project]
+name = "chunkbycount"
+version = "0.1.0"
+description = "Item-count adaptive chunking and structured extraction for long-list document parsing with LLMs."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    {name = "Anton Fedoruk", email = "anton@kay.ai"},
+    {name = "Serhii Shchoholiev", email = "serhii@kay.ai"},
+    {name = "Akhil Mehta", email = "akhil@kay.ai"},
+]
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = [
+    "LLM",
+    "document extraction",
+    "structured extraction",
+    "adaptive chunking",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "openai>=1.104.1,<3",
+    "openai-agents>=0.2.11,<1",
+    "pydantic>=2.11,<3",
+    "python-dotenv>=1.1,<2",
+    "tenacity>=9,<10",
+    "tiktoken>=0.9,<1",
+]
+
+[project.optional-dependencies]
+semantic-dedup = [
+    "numpy>=2,<3",
+    "scikit-learn>=1.7,<2",
+]
+
+[project.urls]
+Homepage = "https://github.com/kaydotai/chunkbycount"
+Documentation = "https://github.com/kaydotai/chunkbycount#readme"
+Issues = "https://github.com/kaydotai/chunkbycount/issues"
+Repository = "https://github.com/kaydotai/chunkbycount"
+
+[tool.poetry]
+packages = [{include = "chunkbycount", from = "src"}]
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = ">=4.2,<5"
+pytest = ">=8.4,<10"
+pytest-asyncio = ">=1,<2"
+ruff = ">=0.12,<1"
+
+[build-system]
+requires = ["poetry-core>=2,<3"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors (settings from FastAPI)
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "C",  # flake8-comprehensions
+    "B",  # flake8-bugbear
+    "D",  # pydocstyle
+    "PYI", # flake8-pyi
+    "UP", # pyupgrade
+    "RUF", # ruff
+    "PIE", # flake8-pie
+    "PGH004", # pygrep-hooks - Use specific rule codes when using noqa
+    "PLE", # pylint error
+    "PLW", # pylint warning
+    "PLR1714", # Consider merging multiple comparisons
+]
+ignore = [
+    # bugbear ignore
+    "B004", # Using `hasattr(x, "__call__")` to test if x is callable is unreliable.
+    "B007", # Loop control variable `i` not used within loop body
+    "B009", # Do not call `getattr` with a constant attribute value
+    "B010", # [*] Do not call `setattr` with a constant attribute value.
+    "B011", # Do not `assert False` (`python -O` removes these calls)
+    "B028", # No explicit `stacklevel` keyword argument found
+    "C901", # too complex
+    "C408", # Often unnecessary
+    # pycodestyle ignore
+    "E501",  # line too long, handled by the formatter
+    # pydocstyle ignore
+    "D100", # Missing docstring in public module
+    "D101", # Missing docstring in public class
+    "D102", # Missing docstring in public method
+    "D103", # Missing docstring in public function
+    "D104", # Missing docstring in public package
+    "D105", # Missing docstring in magic method
+    "D106", # Missing docstring in public nested class
+    "D107", # Missing docstring in `__init__`
+    "D209", # [*] Multi-line docstring closing quotes should be on a separate line
+    "D205", # 1 blank line required between summary line and description
+    "D211",  # Ignoring no blank line before class to resolve conflict with D203
+    "D203",  # Ignoring blank line before class docstring to resolve conflict with D211
+    "D213",  # Ignoring multi-line summary on second line to resolve conflict with D212
+    "D400", # First line should end with a period
+    "D401", # First line of docstring should be in imperative mood
+    "D402", # First line should not be the function's signature
+    "D404", # First word of the docstring should not be "This"
+    "D415", # First line should end with a period, question mark, or exclamation point
+    # ruff ignore
+    "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
+    "RUF001", # Japanese ambiguous Unicode characters in strings.
+    "E402", # For scripts
+    "RUF003",
+    "RUF002",
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+force-sort-within-sections = true
+order-by-type = true
+lines-after-imports = 2
+relative-imports-order = "closest-to-furthest"
+extra-standard-library = ["typing", "pydantic"]
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+known-first-party = ["chunkbycount"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+filterwarnings = [
+    "ignore:pkg_resources is deprecated:DeprecationWarning"
+]
+asyncio_mode = "strict"
+asyncio_default_fixture_loop_scope = "function"

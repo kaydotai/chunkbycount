@@ -1,0 +1,46 @@
+name: Bug report
+description: Report incorrect behavior or a reproducible failure.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not include API keys, customer documents, or other sensitive data.
+        For security vulnerabilities, follow SECURITY.md instead of opening an issue.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Package version, commit SHA, or branch.
+    validations:
+      required: true
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      placeholder: "3.13"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include synthetic input and redact credentials.
+      render: python
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Remove secrets and sensitive document content.
+      render: shell
