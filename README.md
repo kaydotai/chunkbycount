@@ -108,7 +108,8 @@ from chunkbycount import StructuredListExtractor, configure_from_environment
 
 
 configure_from_environment()  # Loads .env when present.
-model_name = os.environ["EXTRACTION_MODEL"]
+extraction_model = os.environ["EXTRACTION_MODEL"]
+counting_model = os.getenv("COUNTING_MODEL", extraction_model)
 
 
 class LineItem(BaseModel):
@@ -130,8 +131,8 @@ def build_prompt(text: str) -> str:
 
 extractor = StructuredListExtractor(
     model_class=LineItems,
-    extraction_model_name=model_name,
-    counting_model_name=model_name,
+    extraction_model_name=extraction_model,
+    counting_model_name=counting_model,
     extraction_system_prompt="Return all requested items as structured data.",
     extraction_prompt_builder=build_prompt,
     max_count_per_chunk=10,
@@ -168,11 +169,34 @@ Vertex's OpenAI-compatible endpoint uses Google Cloud OAuth credentials; the
 library does not manage that token refresh. Use a supported OpenAI-compatible
 credential/endpoint pair or provide a separate integration for Vertex.
 
+### Choosing models
+
+`chunkbycount` does not keep a model allowlist. Supply provider model IDs that
+are available to your credentials through the configured endpoint and support
+text input and structured output. If `counting_model_name` is omitted, the
+extraction model is used for counting too.
+
+Current practical choices are:
+
+| Provider | Extraction model | Counting model |
+|---|---|---|
+| OpenAI | [`gpt-5.6-sol`](https://developers.openai.com/api/docs/models/gpt-5.6-sol) for maximum quality, [`gpt-5.6-terra`](https://developers.openai.com/api/docs/models/gpt-5.6-terra) for balance, or [`gpt-5.6-luna`](https://developers.openai.com/api/docs/models/gpt-5.6-luna) for high-volume workloads | `gpt-5.6-luna` is the usual lower-cost choice; use Terra or Sol when counting accuracy matters more than cost |
+| Gemini Developer API | [`gemini-3.6-flash`](https://ai.google.dev/gemini-api/docs/models/gemini-3.6-flash) or the benchmarked [`gemini-3.5-flash`](https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash) | [`gemini-3.5-flash-lite`](https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite) for lower-cost counting, or `gemini-3.5-flash` when accuracy matters more |
+
+The benchmark above used the same model for counting and extraction:
+`gpt-5.6-sol` or `gemini-3.5-flash`. The other combinations are
+provider-documented choices, not benchmark results from this repository.
+Availability and model IDs change, so consult the live
+[OpenAI](https://developers.openai.com/api/docs/models) or
+[Gemini](https://ai.google.dev/gemini-api/docs/models) catalog when configuring
+a deployment.
+
 ## Important options
 
 | Option | Default | Effect |
 |---|---:|---|
-| `counting_model_name` | extraction model | Model used for count probes; it may be a smaller model |
+| `extraction_model_name` | required | Provider model ID used for structured extraction |
+| `counting_model_name` | extraction model | Provider model ID used for count probes; see the choices above |
 | `max_count_per_chunk` | `10` | Predicted item limit per extraction window |
 | `token_per_chunk` | `250` | Source-token size of initial counting blocks |
 | `max_tokens_per_window` | `8000` | Source-token limit for a packed window |
@@ -224,8 +248,8 @@ The library recognizes these optional settings:
 | `CHUNKBYCOUNT_ENABLE_TRACING` | `false` | Enable Agents SDK tracing |
 
 Invalid configured values raise `ValueError` instead of silently falling back
-to defaults. `EXTRACTION_MODEL` is used only by the examples; it is not read by
-the library.
+to defaults. `EXTRACTION_MODEL` and `COUNTING_MODEL` are used only by the
+examples; they are not read by the library.
 
 ## Privacy and tracing
 

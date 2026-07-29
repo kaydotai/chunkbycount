@@ -12,6 +12,11 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    versioning-strategy: "lockfile-only"
+    groups:
+      python-dependencies:
+        patterns:
+          - "*"
     labels:
       - "dependencies"
       - "python"
