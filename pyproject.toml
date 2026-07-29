@@ -6,8 +6,6 @@ readme = "README.md"
 requires-python = ">=3.11"
 authors = [
     {name = "Anton Fedoruk", email = "anton@kay.ai"},
-    {name = "Serhii Shchoholiev", email = "serhii@kay.ai"},
-    {name = "Akhil Mehta", email = "akhil@kay.ai"},
 ]
 license = "MIT"
 license-files = ["LICENSE"]
