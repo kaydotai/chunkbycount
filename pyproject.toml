@@ -16,7 +16,6 @@ keywords = [
     "adaptive chunking",
 ]
 classifiers = [
-    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
@@ -47,6 +46,7 @@ Homepage = "https://github.com/kaydotai/chunkbycount"
 Documentation = "https://github.com/kaydotai/chunkbycount#readme"
 Issues = "https://github.com/kaydotai/chunkbycount/issues"
 Repository = "https://github.com/kaydotai/chunkbycount"
+Changelog = "https://github.com/kaydotai/chunkbycount/blob/main/CHANGELOG.md"
 
 [tool.poetry]
 packages = [{include = "chunkbycount", from = "src"}]

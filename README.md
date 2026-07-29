@@ -9,8 +9,6 @@ divides source text into small token blocks, estimates how many target items
 each block contains, and packs consecutive blocks into extraction windows with
 a configurable predicted item limit.
 
-The package is alpha software and has not been published to PyPI yet.
-
 ## Why item-count adaptive chunking?
 
 A fixed token window can contain two items or two hundred. Large windows may
@@ -72,16 +70,6 @@ use a larger component boundary.
 
 ## Installation
 
-To install from source before the first PyPI release:
-
-```bash
-git clone https://github.com/kaydotai/chunkbycount.git
-cd chunkbycount
-poetry install --with dev
-```
-
-After the first PyPI release:
-
 ```bash
 pip install chunkbycount
 ```
@@ -94,6 +82,16 @@ pip install "chunkbycount[semantic-dedup]"
 ```
 
 Python 3.11 or newer is supported.
+
+### Development installation
+
+To work on the project from source:
+
+```bash
+git clone https://github.com/kaydotai/chunkbycount.git
+cd chunkbycount
+poetry install --with dev
+```
 
 ## Quick start
 
