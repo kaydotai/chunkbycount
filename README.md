@@ -58,15 +58,47 @@ tradeoff this package makes explicit. The Gemini run used native Vertex Express
 model calls around the same `chunkbycount` planner; the packaged Gemini helper
 currently targets the Gemini Developer API's OpenAI-compatible endpoint.
 
-### Inherited-context limitation
+### Cross-chunk context limitation
 
-Adaptive splitting does not automatically repeat page or section headers in
-every child chunk. If a record inherits a required field from a header that is
-absent from its extraction window, a prompt cannot recover that missing
-evidence reliably. We observed this on LongListBench's 998-row
-`ifta_return_schedule_002` case. For such documents, first create
-self-contained textual components, propagate the required header context, or
-use a larger component boundary.
+Each planned window is extracted independently. The method works best when
+each target item and the evidence needed to populate it occur in the same
+window. It does not automatically repeat page or section headers, join records
+across distant parts of a document, or retrieve supporting passages for an
+item.
+
+The optional aggregation stage can correct or enrich an item only when the
+necessary evidence is present in the context supplied to that aggregation
+call. By default, that context contains the item's extraction window and the
+following window. Aggregation is not document-wide reconciliation: it does not
+add missed items, remove extracted items, or independently locate relevant
+passages elsewhere in the document.
+
+We observed the inherited-context version of this limitation on
+LongListBench's public 998-row
+[`ifta_return_schedule_002`](https://github.com/kaydotai/longlistbench/blob/main/data/transcripts/ocr_gemini/ifta_return_schedule_002.md)
+case. Most row-level values were extracted correctly, but the required return
+schedule was inherited from a page header that was absent from many extraction
+windows:
+
+| Model | Count calls | Extraction calls | Returned/target rows | Exact rows | Field F1 | Time |
+|---|---:|---:|---:|---:|---:|---:|
+| `gpt-5.6-sol` | 242 | 126 | 998/998 | 267/998 (26.8%) | 95.78% | 240 s |
+| `gemini-3.5-flash` | 242 | 126 | 997/998 | 275/998 (27.6%) | 93.75% | 301 s |
+
+The high field F1 alongside low exact-record accuracy illustrates the boundary:
+the models recovered most evidence local to each row but could not reliably
+restore the missing inherited label. These are diagnostic single-document
+results, not an aggregate LongListBench score.
+
+For documents with this structure, preprocess the text into self-contained
+components or repeat the applicable header context alongside each record. For
+cross-page joins or genuinely distant evidence, use a separate retrieval or
+context-selection step to supply the relevant passages before aggregation.
+
+For smaller documents, `aggregate_full_context=True` supplies the complete
+document to every aggregation call. This can help when relevant context is not
+adjacent, but it repeats the full document once per extraction window and can
+substantially increase token usage and latency.
 
 ## Installation
 
@@ -199,7 +231,8 @@ a deployment.
 | `token_per_chunk` | `250` | Source-token size of initial counting blocks |
 | `max_tokens_per_window` | `8000` | Source-token limit for a packed window |
 | `batch_size` | `20` | Maximum concurrent calls within each stage |
-| `use_aggregation` | `False` | Verify/enrich outputs with adjacent context |
+| `use_aggregation` | `False` | Correct/enrich existing items using the current and following windows |
+| `aggregate_full_context` | `False` | Give every aggregation call the full document instead of adjacent context |
 | `use_guardrails` | `False` | Run an additional verification pass |
 | `semantic_deduplication` | `False` | Use embeddings and an LLM on similar items |
 | `deduplicate_items` | `True` | Remove exact duplicate output objects |
