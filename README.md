@@ -4,10 +4,11 @@
 [![Python 3.11–3.14](https://img.shields.io/badge/python-3.11%E2%80%933.14-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://github.com/kaydotai/chunkbycount/blob/main/LICENSE)
 
-`chunkbycount` extracts long structured lists from documents with LLMs. It
-divides source text into small token blocks, estimates how many target items
-each block contains, and packs consecutive blocks into extraction windows with
-a configurable predicted item limit.
+Extract long structured lists from documents with LLMs by adapting chunk
+boundaries to estimated item counts. The library divides source text into small
+token blocks, estimates how many target items each block contains, and packs
+consecutive blocks into extraction windows with a configurable predicted item
+limit.
 
 ## Why item-count adaptive chunking?
 
